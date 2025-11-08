@@ -1,0 +1,268 @@
+/* Variáveis CSS */
+:root {
+    --primary-color: #0066cc;
+    --primary-light: #4da6ff;
+    --primary-lighter: #80c1ff;
+    --primary-lightest: #b3d9ff;
+    --text-color: #ffffff;
+    --text-secondary: #e6f2ff;
+    --shadow-color: rgba(0,0,0,0.2);
+    --modal-bg: rgba(0,0,0,0.8);
+}
+
+/* Reset e estilos base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: var(--primary-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+/* Layout container */
+.container {
+    text-align: center;
+    padding: 20px;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+/* Tipografia */
+h1 {
+    font-size: clamp(2em, 5vw, 2.5em);
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px var(--shadow-color);
+    color: var(--text-color);
+}
+
+h2 {
+    color: var(--text-secondary);
+    font-size: clamp(1.2em, 4vw, 1.6em);
+    margin-bottom: 1em;
+}
+
+.description {
+    font-size: clamp(1em, 3vw, 1.2em);
+    margin-bottom: 30px;
+    color: var(--text-secondary);
+}
+
+.reminder {
+    font-style: italic;
+    margin-top: 20px;
+    color: var(--primary-lightest);
+}
+
+/* Slideshow */
+.slideshow {
+    margin: 20px auto;
+    max-width: 600px;
+    position: relative;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px var(--shadow-color);
+    overflow: hidden;
+}
+
+.slide {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.slide img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    display: block;
+}
+
+/* Controles do slideshow */
+.prev, .next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 16px;
+    color: var(--text-color);
+    font-weight: bold;
+    font-size: 18px;
+    background-color: var(--modal-bg);
+    transition: background-color 0.3s;
+    user-select: none;
+    z-index: 2;
+}
+
+.prev { left: 0; border-radius: 0 3px 3px 0; }
+.next { right: 0; border-radius: 3px 0 0 3px; }
+.prev:hover, .next:hover { background-color: rgba(0,0,0,0.9); }
+
+/* Dots do slideshow */
+.dots {
+    text-align: center;
+    padding: 10px;
+}
+
+.dot {
+    cursor: pointer;
+    height: 12px;
+    width: 12px;
+    margin: 0 4px;
+    background-color: var(--primary-lightest);
+    border-radius: 50%;
+    display: inline-block;
+    transition: background-color 0.3s;
+}
+
+.dot.active, .dot:hover {
+    background-color: var(--text-color);
+}
+
+/* Botões */
+.button {
+    background-color: var(--primary-light);
+    color: var(--text-color);
+    padding: clamp(12px, 3vw, 15px) clamp(24px, 5vw, 30px);
+    border: none;
+    border-radius: 25px;
+    font-size: clamp(1em, 2.5vw, 1.1em);
+    cursor: pointer;
+    margin: 10px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 6px var(--shadow-color);
+    display: inline-block;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.button:hover {
+    background-color: var(--primary-lighter);
+    transform: scale(1.05);
+}
+
+.button:active {
+    transform: scale(0.98);
+}
+
+.button.secondary {
+    background-color: var(--primary-lighter);
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--modal-bg);
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-lighter));
+    margin: clamp(10%, 20vh, 15%) auto;
+    padding: clamp(20px, 5vw, 30px);
+    border-radius: 15px;
+    width: clamp(300px, 90%, 500px);
+    text-align: center;
+    position: relative;
+    box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+.modal .big {
+    font-size: 1.2em;
+    color: var(--text-color);
+    margin: 6px 0 14px;
+}
+
+.close {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 28px;
+    cursor: pointer;
+    color: var(--text-color);
+    transition: color 0.3s;
+    background: transparent;
+    border: none;
+}
+
+.close:hover {
+    color: var(--primary-lightest);
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 14px;
+}
+
+/* Canvas confetti */
+#confetti-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Touch optimizations */
+@media (hover: none) {
+    .button:hover {
+        transform: none;
+    }
+
+    .prev, .next {
+        padding: 20px;
+        font-size: 24px;
+    }
+
+    .dot {
+        height: 16px;
+        width: 16px;
+        margin: 0 6px;
+    }
+}
+
+/* Print styles */
+@media print {
+    .button, .modal, #confetti-canvas {
+        display: none !important;
+    }
+
+    body {
+        background: white;
+        color: black;
+    }
+
+    .container {
+        padding: 40px;
+    }
+
+    .slide {
+        display: block !important;
+        opacity: 1 !important;
+        break-inside: avoid;
+    }
+}

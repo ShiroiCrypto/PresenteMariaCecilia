@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌟 Celebrando Nossa Amizade</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+    <canvas id="card-canvas" aria-hidden="true"></canvas>
+
+    <div class="container">
+        <header>
+            <h1>✨ Olá, Maria Cecília!</h1>
+            <p class="subtitle">Que bom ter você como amiga.</p>
+        </header>
+
+        <section class="message">
+            <h2>Um presente digital para celebrar nossa amizade</h2>
+            
+            <!-- Streaming de vídeo da câmera ESP32CAM -->
+            <div class="camera-section">
+                <div class="camera-container">
+                    <div id="camera-status" class="camera-status">
+                        <span class="status-indicator"></span>
+                        <span class="status-text">Câmera pronta</span>
+                    </div>
+                    <div id="video-container" class="video-container">
+                        <img id="stream" src="/stream" alt="Streaming de vídeo" class="stream-image">
+                        <div id="camera-loading" class="camera-loading">
+                            <div class="spinner"></div>
+                            <p>Carregando câmera...</p>
+                        </div>
+                    </div>
+                    <div class="camera-controls">
+                        <button id="captureBtn" class="button camera-btn" aria-label="Capturar foto">
+                            📸 Capturar Foto
+                        </button>
+                        <button id="toggleStreamBtn" class="button secondary camera-btn" aria-label="Alternar streaming">
+                            ⏸️ Pausar
+                        </button>
+                    </div>
+                    <div id="captured-photo" class="captured-photo" style="display: none;">
+                        <h3>Sua foto capturada:</h3>
+                        <img id="photo-preview" src="" alt="Foto capturada">
+                        <button id="downloadPhotoBtn" class="button secondary">
+                            💾 Baixar Foto
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <p class="message-text">
+                Às vezes a vida nos presenteia com pessoas especiais. Que bom ter você como amiga! 
+                Use a câmera acima para capturar um momento especial e clique no botão abaixo para celebrarmos juntos.
+            </p>
+        </section>
+
+        <section class="action">
+            <button id="revealBtn" class="button" aria-label="Celebrar">
+                CELEBRAR NOSSA AMIZADE 🎉
+            </button>
+        </section>
+
+        <footer>
+            <p>Feito com ❤️ por Matheus Gustavo · Powered by ESP32</p>
+        </footer>
+    </div>
+
+    <!-- Modal de celebração -->
+    <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="modal-content celebration">
+            <button id="closeModal" class="close" aria-label="Fechar">×</button>
+            <h2>🌟 Para você guardar essa lembrança</h2>
+            
+            <!-- Preview do cartão -->
+            <div id="card-preview" class="card-preview">
+                <div class="card-front">
+                    <h3>Amizade</h3>
+                    <p class="quote">"A amizade duplica as alegrias e divide as tristezas."</p>
+                    <p class="date">Novembro, 2025</p>
+                </div>
+            </div>
+
+            <p class="big">Obrigado por fazer parte desta história!</p>
+            
+            <div class="modal-actions">
+                <button id="downloadCard" class="button secondary">
+                    Baixar Cartão Digital
+                </button>
+                <button id="celebrate" class="button">
+                    Celebrar Novamente! 🎉
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Controle da câmera ESP32CAM
+    let streamActive = true;
+    let streamImage = document.getElementById('stream');
+    let cameraStatus = document.getElementById('camera-status');
+    let statusText = cameraStatus.querySelector('.status-text');
+    let statusIndicator = cameraStatus.querySelector('.status-indicator');
+    let cameraLoading = document.getElementById('camera-loading');
+    let toggleStreamBtn = document.getElementById('toggleStreamBtn');
+    let captureBtn = document.getElementById('captureBtn');
+    let capturedPhoto = document.getElementById('captured-photo');
+    let photoPreview = document.getElementById('photo-preview');
+    let downloadPhotoBtn = document.getElementById('downloadPhotoBtn');
+
+    // Verificar status da câmera
+    async function checkCameraStatus() {
+        try {
+            const response = await fetch('/status');
+            const data = await response.json();
+            if (data.camera === 'ok') {
+                statusIndicator.classList.add('active');
+                statusText.textContent = 'Câmera conectada';
+                cameraLoading.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Erro ao verificar status da câmera:', error);
+            statusText.textContent = 'Câmera desconectada';
+            statusIndicator.classList.remove('active');
+        }
+    }
+
+    // Alternar streaming
+    toggleStreamBtn.addEventListener('click', () => {
+        streamActive = !streamActive;
+        if (streamActive) {
+            streamImage.src = '/stream?t=' + Date.now();
+            toggleStreamBtn.textContent = '⏸️ Pausar';
+            toggleStreamBtn.classList.remove('paused');
+        } else {
+            streamImage.src = '';
+            toggleStreamBtn.textContent = '▶️ Iniciar';
+            toggleStreamBtn.classList.add('paused');
+        }
+    });
+
+    // Capturar foto
+    captureBtn.addEventListener('click', async () => {
+        try {
+            captureBtn.disabled = true;
+            captureBtn.textContent = '📸 Capturando...';
+            
+            const response = await fetch('/capture?t=' + Date.now());
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                photoPreview.src = url;
+                capturedPhoto.style.display = 'block';
+                
+                // Scroll suave até a foto
+                capturedPhoto.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                
+                // Configurar download
+                downloadPhotoBtn.onclick = () => {
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'foto-maria-cecilia-' + Date.now() + '.jpg';
+                    a.click();
+                };
+            } else {
+                alert('Erro ao capturar foto. Tente novamente.');
+            }
+        } catch (error) {
+            console.error('Erro ao capturar foto:', error);
+            alert('Erro ao capturar foto. Verifique se a câmera está funcionando.');
+        } finally {
+            captureBtn.disabled = false;
+            captureBtn.textContent = '📸 Capturar Foto';
+        }
+    });
+
+    // Gerenciar erro de carregamento do stream
+    streamImage.addEventListener('error', () => {
+        cameraLoading.style.display = 'flex';
+        statusText.textContent = 'Erro ao carregar stream';
+        statusIndicator.classList.remove('active');
+    });
+
+    streamImage.addEventListener('load', () => {
+        cameraLoading.style.display = 'none';
+        statusText.textContent = 'Câmera conectada';
+        statusIndicator.classList.add('active');
+    });
+
+    // Verificar status periodicamente
+    checkCameraStatus();
+    setInterval(checkCameraStatus, 5000);
+    
+    // Gerador de melodia suave
+    function playMelody() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const notes = [261.63, 329.63, 392.00, 523.25]; // C4, E4, G4, C5
+            let t = ctx.currentTime;
+            notes.forEach((freq, i) => {
+                const o = ctx.createOscillator();
+                const g = ctx.createGain();
+                o.type = 'sine';
+                o.frequency.value = freq;
+                g.gain.value = 0.0001;
+                o.connect(g);
+                g.connect(ctx.destination);
+                g.gain.setValueAtTime(0.0001, t);
+                g.gain.exponentialRampToValueAtTime(0.1, t + 0.02);
+                g.gain.exponentialRampToValueAtTime(0.0001, t + 0.5);
+                o.start(t);
+                o.stop(t + 0.6);
+                t += 0.2;
+            });
+        } catch (e) {
+            console.log('WebAudio não disponível', e);
+        }
+    }
+
+    // Confete em tons de azul
+    function launchConfetti() {
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+        let W = canvas.width = window.innerWidth;
+        let H = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+        });
+
+        const colors = ['#0066cc','#4da6ff','#80c1ff','#b3d9ff','#e6f2ff'];
+        const pieces = Array(150).fill().map(() => ({
+            x: Math.random() * W,
+            y: Math.random() * H - H,
+            r: Math.random() * 10 + 5,
+            d: Math.random() * 16 - 8,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            tilt: Math.random() * 10 - 5,
+            opacity: 1
+        }));
+
+        let confettiActive = true;
+        function update() {
+            if (!confettiActive) return;
+            
+            ctx.clearRect(0, 0, W, H);
+            pieces.forEach(p => {
+                p.y += 3;
+                p.tilt = Math.sin(p.d) * 15;
+                p.x += Math.sin(p.d);
+                p.opacity -= 0.001;
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.opacity;
+                ctx.beginPath();
+                ctx.ellipse(p.x, p.y, p.r, p.r * 0.6, p.tilt, 0, Math.PI * 2);
+                ctx.fill();
+
+                if (p.y > H || p.opacity <= 0) {
+                    p.y = -20;
+                    p.opacity = 1;
+                }
+            });
+            requestAnimationFrame(update);
+        }
+
+        confettiActive = true;
+        update();
+
+        // Parar confete após 8 segundos
+        setTimeout(() => {
+            confettiActive = false;
+        }, 8000);
+    }
+
+    // Gerador de cartão digital
+    function generateCard() {
+        const canvas = document.getElementById('card-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 600;
+        canvas.height = 400;
+
+        // Fundo gradiente
+        const gradient = ctx.createLinearGradient(0, 0, 600, 400);
+        gradient.addColorStop(0, '#0066cc');
+        gradient.addColorStop(1, '#b3d9ff');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 600, 400);
+
+        // Padrão de fundo
+        ctx.fillStyle = 'rgba(255,255,255,0.1)';
+        for(let i = 0; i < 5; i++) {
+            ctx.beginPath();
+            ctx.arc(
+                Math.random() * 600,
+                Math.random() * 400,
+                Math.random() * 100 + 50,
+                0,
+                Math.PI * 2
+            );
+            ctx.fill();
+        }
+
+        // Texto do cartão
+        ctx.textAlign = 'center';
+        ctx.fillStyle = 'white';
+        ctx.shadowColor = 'rgba(0,0,0,0.2)';
+        ctx.shadowBlur = 10;
+        
+        ctx.font = 'bold 40px Arial';
+        ctx.fillText('Amizade', 300, 100);
+
+        ctx.shadowBlur = 5;
+        ctx.font = '20px Arial';
+        ctx.fillText('"A amizade duplica as alegrias', 300, 180);
+        ctx.fillText('e divide as tristezas."', 300, 210);
+
+        ctx.font = 'italic 16px Arial';
+        ctx.fillText('Novembro, 2025', 300, 350);
+
+        return canvas.toDataURL('image/png');
+    }
+
+    // Event Listeners
+    document.getElementById('revealBtn').addEventListener('click', () => {
+        modal.style.display = 'flex';
+        modal.style.opacity = '0';
+        setTimeout(() => {
+            modal.style.opacity = '1';
+        }, 10);
+        playMelody();
+        launchConfetti();
+    });
+
+    document.getElementById('celebrate').addEventListener('click', () => {
+        playMelody();
+        launchConfetti();
+    });
+
+    document.getElementById('downloadCard').addEventListener('click', () => {
+        const link = document.createElement('a');
+        link.download = 'cartao-amizade.png';
+        link.href = generateCard();
+        link.click();
+    });
+
+    document.getElementById('closeModal').addEventListener('click', () => {
+        modal.style.opacity = '0';
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300);
+    });
+
+    </script>
+</body>
+</html>
