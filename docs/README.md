@@ -72,9 +72,16 @@ Opção B — PlatformIO (VS Code)
 - Editar o título da rede (ssid): abra o sketch e procure por `ssid`.
 - Trocar o texto de boas‑vindas: edite `index.html` ou a string HTML no sketch.
 
-## Licença e créditos
+## Licença
 
-Sinta‑se livre para usar e adaptar este projeto para presentes pessoais. Se quiser, adicione uma licença (`MIT`, `CC BY‑NC`, etc.) no repositório.
+Este projeto está licenciado sob a licença MIT. O arquivo completo da licença está disponível em `../LICENSE` (arquivo `LICENSE` na raiz do repositório).
+
+Resumo rápido:
+
+- Copyright (c) 2025 Shiroi | Crypto
+- Permissão é concedida gratuitamente para usar, copiar, modificar e distribuir o software, contanto que o aviso de copyright e esta permissão sejam incluídos.
+
+Se você preferir outra licença ou quiser incluir termos específicos para uso pessoal/comercial, me avise que eu atualizo o `LICENSE` e o README.
 
 ---
 
