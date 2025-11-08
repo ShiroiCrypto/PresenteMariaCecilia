@@ -84,11 +84,3 @@ Resumo rápido:
 Se você preferir outra licença ou quiser incluir termos específicos para uso pessoal/comercial, me avise que eu atualizo o `LICENSE` e o README.
 
 ---
-
-Se quiser, eu posso:
-
-1. Gerar um HTML de exemplo bem bonito (com estilo, fotos e animação) pronto em `codigo_esp32/data/index.html`.
-2. Ajudar a configurar o upload de arquivos estáticos para LittleFS/SPIFFS no Arduino IDE ou PlatformIO.
-3. Personalizar a mensagem para a Maria Cecília — se você me passar nome, fotos (ou links), cores e tom da mensagem.
-
-Diga qual dos itens acima você quer que eu faça em seguida que eu cuido do resto.
